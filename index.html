@@ -1,97 +1,164 @@
-function detectDisease() {
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plant Disease Detection</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f0f8f0;
+            text-align: center;
+        }
 
-    const file = imageInput.files[0];
+        .container {
+            width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+            margin-top: 50px;
+        }
 
-    if (!file) {
+        h1 {
+            color: green;
+        }
+
+        input[type="file"] {
+            margin: 20px;
+        }
+
+        button {
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: darkblue;
+        }
+
+        img {
+            margin-top: 15px;
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border: 2px solid green;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌿 Plant Disease Detection</h1>
+
+    <input type="file" id="imageInput" accept="image/*">
+    <br>
+    <button onclick="detectDisease()">Detect Disease</button>
+
+    <div>
+        <img id="preview" src="" alt="">
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+
+    imageInput.onchange = function() {
+        const file = imageInput.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+        }
+    };
+
+    function detectDisease() {
+
+        const diseases = [
+            "Tomato Early Blight",
+            "Tomato Late Blight",
+            "Tomato Leaf Mold",
+            "Tomato Septoria Leaf Spot",
+            "Tomato Bacterial Spot",
+            "Tomato Mosaic Virus",
+            "Tomato Yellow Leaf Curl Virus",
+
+            "Potato Early Blight",
+            "Potato Late Blight",
+            "Potato Common Scab",
+            "Potato Black Scurf",
+
+            "Apple Scab",
+            "Apple Black Rot",
+            "Apple Cedar Rust",
+
+            "Grape Black Rot",
+            "Grape Esca (Black Measles)",
+            "Grape Leaf Blight",
+
+            "Corn Gray Leaf Spot",
+            "Corn Common Rust",
+            "Corn Northern Leaf Blight",
+
+            "Wheat Rust",
+            "Wheat Loose Smut",
+            "Wheat Powdery Mildew",
+
+            "Rice Blast",
+            "Rice Brown Spot",
+            "Rice Bacterial Leaf Blight",
+
+            "Cotton Leaf Curl Virus",
+            "Cotton Bacterial Blight",
+            "Cotton Root Rot",
+
+            "Soybean Rust",
+            "Soybean Bacterial Blight",
+            "Soybean Mosaic Virus",
+
+            "Pepper Bacterial Spot",
+            "Pepper Leaf Curl Virus",
+            "Pepper Anthracnose",
+
+            "Cucumber Downy Mildew",
+            "Cucumber Powdery Mildew",
+            "Cucumber Angular Leaf Spot",
+
+            "Banana Panama Disease",
+            "Banana Black Sigatoka",
+            "Banana Bunchy Top Virus",
+
+            "Mango Anthracnose",
+            "Mango Powdery Mildew",
+            "Mango Bacterial Canker",
+
+            "Leaf Spot",
+            "Powdery Mildew",
+            "Downy Mildew",
+            "Rust Disease",
+            "Anthracnose",
+            "Fusarium Wilt",
+            "Verticillium Wilt",
+
+            "Healthy Leaf"
+        ];
+
+        const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
+
         document.getElementById("result").innerHTML =
-            "⚠️ Please upload an image first!";
-        return;
+            "🌱 Detected Disease: " + randomDisease;
     }
+</script>
 
-    const diseases = [
-        "Tomato Early Blight",
-        "Tomato Late Blight",
-        "Tomato Leaf Mold",
-        "Tomato Septoria Leaf Spot",
-        "Tomato Bacterial Spot",
-        "Tomato Mosaic Virus",
-        "Tomato Yellow Leaf Curl Virus",
-
-        "Potato Early Blight",
-        "Potato Late Blight",
-        "Potato Common Scab",
-        "Potato Black Scurf",
-
-        "Apple Scab",
-        "Apple Black Rot",
-        "Apple Cedar Rust",
-
-        "Grape Black Rot",
-        "Grape Esca (Black Measles)",
-        "Grape Leaf Blight",
-
-        "Corn Gray Leaf Spot",
-        "Corn Common Rust",
-        "Corn Northern Leaf Blight",
-
-        "Wheat Rust",
-        "Wheat Loose Smut",
-        "Wheat Powdery Mildew",
-
-        "Rice Blast",
-        "Rice Brown Spot",
-        "Rice Bacterial Leaf Blight",
-
-        "Cotton Leaf Curl Virus",
-        "Cotton Bacterial Blight",
-        "Cotton Root Rot",
-
-        "Soybean Rust",
-        "Soybean Bacterial Blight",
-        "Soybean Mosaic Virus",
-
-        "Pepper Bacterial Spot",
-        "Pepper Leaf Curl Virus",
-        "Pepper Anthracnose",
-
-        "Cucumber Downy Mildew",
-        "Cucumber Powdery Mildew",
-        "Cucumber Angular Leaf Spot",
-
-        "Banana Panama Disease",
-        "Banana Black Sigatoka",
-        "Banana Bunchy Top Virus",
-
-        "Mango Anthracnose",
-        "Mango Powdery Mildew",
-        "Mango Bacterial Canker",
-
-        "Leaf Spot",
-        "Powdery Mildew",
-        "Downy Mildew",
-        "Rust Disease",
-        "Anthracnose",
-        "Fusarium Wilt",
-        "Verticillium Wilt",
-
-        "Healthy Leaf"
-    ];
-
-    // 🔹 Random disease (simulation)
-    const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
-
-    // 🔹 Simulated confidence (AI probability)
-    const confidence = Math.random(); // 0 to 1
-
-    // 🔥 MAIN LOGIC (IMPORTANT)
-    if (confidence < 0.6) {
-        document.getElementById("result").innerHTML =
-            "❌ Sorry, this is not a plant image!";
-        document.getElementById("result").style.color = "red";
-    } else {
-        document.getElementById("result").innerHTML =
-            "🌱 Detected Disease: " + randomDisease +
-            " (" + (confidence * 100).toFixed(2) + "%)";
-        document.getElementById("result").style.color = "green";
-    }
-}
+</body>
+</html>
