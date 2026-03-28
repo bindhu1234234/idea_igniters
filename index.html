@@ -52,20 +52,21 @@
             height: 200px;
             object-fit: cover;
             border: 2px solid green;
+            display: none;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🌿 Plant Disease Detection</h1>
+    <h1>Plant Disease Detection</h1>
 
     <input type="file" id="imageInput" accept="image/*">
     <br>
     <button onclick="detectDisease()">Detect Disease</button>
 
     <div>
-        <img id="preview" src="" alt="">
+        <img id="preview" src="" alt="Image Preview">
     </div>
 
     <div id="result"></div>
@@ -74,89 +75,47 @@
 <script>
     const imageInput = document.getElementById("imageInput");
     const preview = document.getElementById("preview");
+    const result = document.getElementById("result");
 
     imageInput.onchange = function() {
         const file = imageInput.files[0];
+
         if (file) {
             preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+            result.innerHTML = "";
         }
     };
 
     function detectDisease() {
+        const file = imageInput.files[0];
+
+        if (!file) {
+            result.innerHTML = "⚠️ Please upload an image first!";
+            return;
+        }
 
         const diseases = [
             "Tomato Early Blight",
-            "Tomato Late Blight",
-            "Tomato Leaf Mold",
-            "Tomato Septoria Leaf Spot",
-            "Tomato Bacterial Spot",
-            "Tomato Mosaic Virus",
-            "Tomato Yellow Leaf Curl Virus",
-
-            "Potato Early Blight",
             "Potato Late Blight",
-            "Potato Common Scab",
-            "Potato Black Scurf",
-
-            "Apple Scab",
-            "Apple Black Rot",
-            "Apple Cedar Rust",
-
-            "Grape Black Rot",
-            "Grape Esca (Black Measles)",
-            "Grape Leaf Blight",
-
-            "Corn Gray Leaf Spot",
-            "Corn Common Rust",
-            "Corn Northern Leaf Blight",
-
-            "Wheat Rust",
-            "Wheat Loose Smut",
-            "Wheat Powdery Mildew",
-
-            "Rice Blast",
-            "Rice Brown Spot",
-            "Rice Bacterial Leaf Blight",
-
-            "Cotton Leaf Curl Virus",
-            "Cotton Bacterial Blight",
-            "Cotton Root Rot",
-
-            "Soybean Rust",
-            "Soybean Bacterial Blight",
-            "Soybean Mosaic Virus",
-
-            "Pepper Bacterial Spot",
-            "Pepper Leaf Curl Virus",
-            "Pepper Anthracnose",
-
-            "Cucumber Downy Mildew",
-            "Cucumber Powdery Mildew",
-            "Cucumber Angular Leaf Spot",
-
-            "Banana Panama Disease",
-            "Banana Black Sigatoka",
-            "Banana Bunchy Top Virus",
-
-            "Mango Anthracnose",
-            "Mango Powdery Mildew",
-            "Mango Bacterial Canker",
-
             "Leaf Spot",
-            "Powdery Mildew",
-            "Downy Mildew",
-            "Rust Disease",
-            "Anthracnose",
-            "Fusarium Wilt",
-            "Verticillium Wilt",
-
-            "Healthy Leaf"
+            "Healthy Leaf",
+            "Bacterial Spot"
         ];
+        <script>
+function displayResult(prediction, confidence) {
+    if (prediction === "Unknown" || confidence < 0.6) {
+        document.getElementById("result").innerText = "Sorry, not a plant image ❌";
+    } else {
+        document.getElementById("result").innerText =
+            "Disease: " + prediction + " (" + (confidence * 100).toFixed(2) + "%)";
+    }
+}
+</script>
 
         const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
 
-        document.getElementById("result").innerHTML =
-            "🌱 Detected Disease: " + randomDisease;
+        result.innerHTML = "Detected Disease: " + randomDisease;
     }
 </script>
 
