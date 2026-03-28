@@ -66,47 +66,51 @@
     <button onclick="detectDisease()">Detect Disease</button>
 
     <div>
-        <img id="preview" src="" alt="Image Preview">
+        <img id="preview">
     </div>
 
     <div id="result"></div>
 </div>
 
 <script>
-    const imageInput = document.getElementById("imageInput");
-    const preview = document.getElementById("preview");
-    const result = document.getElementById("result");
+const imageInput = document.getElementById("imageInput");
+const preview = document.getElementById("preview");
+const result = document.getElementById("result");
 
-    imageInput.onchange = function() {
-        const file = imageInput.files[0];
-
-        if (file) {
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = "block";
-            result.innerHTML = "";
-        }
-    };
-
-    function detectDisease() {
-        const file = imageInput.files[0];
-
-        if (!file) {
-            result.innerHTML = "⚠️ Please upload an image first!";
-            return;
-        }
-
-        const diseases = [
-            "Tomato Early Blight",
-            "Potato Late Blight",
-            "Leaf Spot",
-            "Healthy Leaf",
-            "Bacterial Spot"
-        ];
-
-        const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
-
-        result.innerHTML = "Detected Disease: " + randomDisease;
+imageInput.onchange = function() {
+    const file = this.files[0];
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+        result.innerHTML = "";
     }
+};
+
+function detectDisease() {
+    const file = imageInput.files[0];
+
+    if (!file) {
+        result.innerHTML = "⚠️ Upload image first!";
+        return;
+    }
+
+    result.innerHTML = "⏳ Detecting...";
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        result.innerHTML = "✅ Detected: " + data.prediction;
+    })
+    .catch(err => {
+        result.innerHTML = "❌ Error connecting to server";
+    });
+}
 </script>
 
 </body>
