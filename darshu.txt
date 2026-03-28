@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plant Disease Detection</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f0f8f0;
+            text-align: center;
+        }
+
+        .container {
+            width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+            margin-top: 50px;
+        }
+
+        h1 {
+            color: green;
+        }
+
+        input[type="file"] {
+            margin: 20px;
+        }
+
+        button {
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: darkblue;
+        }
+
+        img {
+            margin-top: 15px;
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border: 2px solid green;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Plant Disease Detection</h1>
+
+    <input type="file" id="imageInput" accept="image/*">
+    <br>
+    <button onclick="detectDisease()">Detect Disease</button>
+
+    <div>
+        <img id="preview" src="" alt="Image Preview">
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+    const result = document.getElementById("result");
+
+    imageInput.onchange = function() {
+        const file = imageInput.files[0];
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+            result.innerHTML = "";
+        }
+    };
+
+    function detectDisease() {
+        const file = imageInput.files[0];
+
+        if (!file) {
+            result.innerHTML = "⚠️ Please upload an image first!";
+            return;
+        }
+
+        const diseases = [
+            "Tomato Early Blight",
+            "Potato Late Blight",
+            "Leaf Spot",
+            "Healthy Leaf",
+            "Bacterial Spot"
+        ];
+
+        const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
+
+        result.innerHTML = "Detected Disease: " + randomDisease;
+    }
+</script>
+
+</body>
+</html>
