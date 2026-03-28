@@ -2,27 +2,32 @@
 <html>
 <head>
     <title>Plant Disease Detection</title>
+
+    <!-- TensorFlow + Teachable Machine -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
+
     <style>
         body {
             font-family: Arial;
-            background-color: #eef7ee;
+            background-color: #f0f8f0;
             text-align: center;
         }
 
         .container {
-            width: 420px;
+            width: 400px;
             margin: auto;
             padding: 20px;
             background: white;
             border-radius: 10px;
             box-shadow: 0px 0px 10px gray;
-            margin-top: 40px;
+            margin-top: 50px;
         }
 
         h1 { color: green; }
 
         button {
-            background: green;
+            background-color: green;
             color: white;
             padding: 10px;
             border: none;
@@ -30,24 +35,19 @@
             cursor: pointer;
         }
 
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            color: darkblue;
+        }
+
         img {
-            margin-top: 10px;
+            margin-top: 15px;
             width: 200px;
             height: 200px;
             display: none;
             border: 2px solid green;
-        }
-
-        .result-box {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f4fff4;
-            border-radius: 8px;
-        }
-
-        .sample-img {
-            width: 150px;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -58,53 +58,62 @@
     <h1>🌿 Plant Disease Detection</h1>
 
     <input type="file" id="imageInput" accept="image/*"><br><br>
-    <button onclick="detectDisease()">Detect</button>
+    <button onclick="predict()">Detect Disease</button>
 
-    <br>
-    <img id="preview">
+    <div>
+        <img id="preview">
+    </div>
 
-    <div id="result" class="result-box"></div>
+    <div id="result">Result will appear here...</div>
 </div>
 
 <script>
-const preview = document.getElementById("preview");
-const result = document.getElementById("result");
+let model;
 
-imageInput.onchange = () => {
+// 🔹 Load your trained model
+async function loadModel() {
+    const URL = "model/";  // folder in GitHub
+    model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+}
+loadModel();
+
+// 🔹 Show preview
+const imageInput = document.getElementById("imageInput");
+const preview = document.getElementById("preview");
+
+imageInput.onchange = function() {
     const file = imageInput.files[0];
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    }
 };
 
-function detectDisease() {
-    const file = imageInput.files[0];
-
-    if (!file) {
-        result.innerHTML = "⚠ Upload image first!";
+// 🔹 Predict disease
+async function predict() {
+    if (!model) {
+        document.getElementById("result").innerHTML = "⏳ Model loading...";
         return;
     }
 
-    result.innerHTML = "⏳ Processing...";
+    if (!preview.src) {
+        document.getElementById("result").innerHTML = "⚠️ Upload an image!";
+        return;
+    }
 
-    const formData = new FormData();
-    formData.append("file", file);
+    const prediction = await model.predict(preview);
 
-    fetch("http://127.0.0.1:5000/predict", {
-        method: "POST",
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        result.innerHTML = `
-            <h3>✅ Disease: ${data.name}</h3>
-            <p><b>Description:</b> ${data.desc}</p>
-            <img class="sample-img" src="${data.image}">
-        `;
-    })
-    .catch(() => {
-        result="disease based image;
+    let highest = prediction[0];
 
-    });
+    for (let i = 1; i < prediction.length; i++) {
+        if (prediction[i].probability > highest.probability) {
+            highest = prediction[i];
+        }
+    }
+
+    document.getElementById("result").innerHTML =
+        "🌱 Detected Disease: " + highest.className +
+        "<br>📊 Accuracy: " + (highest.probability * 100).toFixed(2) + "%";
 }
 </script>
 
