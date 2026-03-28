@@ -89,8 +89,10 @@
 
     function detectDisease() {
         const file = imageInput.files[0];
-        unction displayResult(prediction, confidence) {
-    if (prediction === "Unknown" || confidence < 0.6) {
+        unction displayResult(prediction, confidence) 
+        {
+    if (prediction === "Unknown" || confidence < 0.6) 
+    {
         document.getElementById("result").innerText = "Sorry, not a plant image ❌";
     } else {
         document.getElementById("result").innerText =
