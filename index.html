@@ -1,188 +1,100 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Plant Disease Detection</title>
-    <style>
-        body {
-            font-family: Arial;
-            background-color: #f0f8f0;
-            text-align: center;
-        }
+import os
+from flask import Flask, request, jsonify, render_template
+from werkzeug.utils import secure_filename
 
-        .container {
-            width: 400px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px gray;
-            margin-top: 50px;
-        }
+app = Flask(__name__)
 
-        h1 {
-            color: green;
-        }
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-        input[type="file"] {
-            margin: 20px;
-        }
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-        button {
-            background-color: green;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-        button:hover {
-            background-color: darkgreen;
-        }
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-        #result {
-            margin-top: 20px;
-            font-weight: bold;
-            color: darkblue;
-        }
 
-        img {
-            margin-top: 15px;
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
-            border: 2px solid green;
-            display: none;
-        }
-    </style>
-</head>
-<body>
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-<div class="container">
-    <h1>Plant Disease Detection</h1>
 
-    <input type="file" id="imageInput" accept="image/*">
-    <br>
-    <button onclick="detectDisease()">Detect Disease</button>
+@app.route('/predict', methods=['POST'])
+def predict():
+    if 'file' not in request.files:
+        return jsonify({'result': '❌ No file uploaded'})
 
-    <div>
-        <img id="preview" src="" alt="Image Preview">
-    </div>
+    file = request.files['file']
 
-    <div id="result"></div>
-</div>
+    if file.filename == '':
+        return jsonify({'result': '❌ No selected file'})
 
-<script>
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        # 🔴 BASIC VALIDATION (Replace with ML later)
+        if not ("leaf" in filename.lower() or "plant" in filename.lower()):
+            return jsonify({'result': '❌ Sorry, please upload a valid plant leaf image.'})
+
+        # Dummy prediction
+        diseases = [
+            "Tomato Early Blight",
+            "Potato Late Blight",
+            "Apple Scab",
+            "Rice Blast",
+            "Mango Anthracnose",
+            "Healthy Leaf"
+        ]
+
+        import random
+        prediction = random.choice(diseases)
+
+        return jsonify({'result': f'🌱 Detected Disease: {prediction}'})
+
+    else:
+        return jsonify({'result': '❌ Invalid file type (only JPG, PNG allowed)'})
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+    <script>
     const imageInput = document.getElementById("imageInput");
     const preview = document.getElementById("preview");
-    const result = document.getElementById("result");
 
     imageInput.onchange = function() {
         const file = imageInput.files[0];
-
         if (file) {
             preview.src = URL.createObjectURL(file);
-            preview.style.display = "block";
-            result.innerHTML = "";
         }
     };
 
     function detectDisease() {
         const file = imageInput.files[0];
-        unction displayResult(prediction, confidence) 
-        {
-    if (prediction === "Unknown" || confidence < 0.6) 
-    {
-        document.getElementById("result").innerText = "Sorry, not a plant image ❌";
-    } else {
-        document.getElementById("result").innerText =
-            "Disease: " + prediction + " (" + (confidence * 100).toFixed(2) + "%)";
 
         if (!file) {
-            result.innerHTML = "⚠️ Please upload an image first!";
+            document.getElementById("result").innerHTML =
+                "⚠️ Please upload an image!";
             return;
         }
 
-        const diseases = [
-             "Tomato Early Blight",
-            "Tomato Late Blight",
-            "Tomato Leaf Mold",
-            "Tomato Septoria Leaf Spot",
-            "Tomato Bacterial Spot",
-            "Tomato Mosaic Virus",
-            "Tomato Yellow Leaf Curl Virus",
+        const formData = new FormData();
+        formData.append("file", file);
 
-            "Potato Early Blight",
-            "Potato Late Blight",
-            "Potato Common Scab",
-            "Potato Black Scurf",
-
-            "Apple Scab",
-            "Apple Black Rot",
-            "Apple Cedar Rust",
-
-            "Grape Black Rot",
-            "Grape Esca (Black Measles)",
-            "Grape Leaf Blight",
-
-            "Corn Gray Leaf Spot",
-            "Corn Common Rust",
-            "Corn Northern Leaf Blight",
-
-            "Wheat Rust",
-            "Wheat Loose Smut",
-            "Wheat Powdery Mildew",
-
-            "Rice Blast",
-            "Rice Brown Spot",
-            "Rice Bacterial Leaf Blight",
-
-            "Cotton Leaf Curl Virus",
-            "Cotton Bacterial Blight",
-            "Cotton Root Rot",
-
-            "Soybean Rust",
-            "Soybean Bacterial Blight",
-            "Soybean Mosaic Virus",
-
-            "Pepper Bacterial Spot",
-            "Pepper Leaf Curl Virus",
-            "Pepper Anthracnose",
-
-            "Cucumber Downy Mildew",
-            "Cucumber Powdery Mildew",
-            "Cucumber Angular Leaf Spot",
-
-            "Banana Panama Disease",
-            "Banana Black Sigatoka",
-            "Banana Bunchy Top Virus",
-
-            "Mango Anthracnose",
-            "Mango Powdery Mildew",
-            "Mango Bacterial Canker",
-
-            "Leaf Spot",
-            "Powdery Mildew",
-            "Downy Mildew",
-            "Rust Disease",
-            "Anthracnose",
-            "Fusarium Wilt",
-            "Verticillium Wilt",
-
-            "Healthy Leaf"
-        ];
-        <script>
-function displayResult(prediction, confidence) {
-    
-    }
-}
-</script>
-
-        const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
-
-        result.innerHTML = "Detected Disease: " + randomDisease;
+        fetch("/predict", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("result").innerHTML = data.result;
+        })
+        .catch(error => {
+            document.getElementById("result").innerHTML =
+                "❌ Error connecting to server";
+        });
     }
 </script>
-
-</body>
-</html>
